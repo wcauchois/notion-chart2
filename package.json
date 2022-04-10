@@ -1,5 +1,5 @@
 {
-  "name": "@notion-chart2/functions",
+  "name": "@wcauchois/notion-chart2",
   "private": true,
   "version": "1.0.0",
   "description": "",
@@ -11,15 +11,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/jsdom": "^16.2.14",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
   },
   "dependencies": {
     "@netlify/functions": "^1.0.0",
-    "jsdom": "^19.0.0",
     "vega": "^5.22.1",
-    "vega-embed": "^6.20.8",
     "vega-lite": "^5.2.0"
   },
   "prettier": {
