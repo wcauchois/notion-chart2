@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "mkdir -p app/dist && cp app/index.html app/dist/index.html && esbuild app/index.tsx --bundle --outfile=app/dist/index.js --define:process.env.NODE_ENV=\\\"production\\\"",
+    "build": "mkdir -p app/dist && cp app/index.html app/dist/ && esbuild app/index.tsx --bundle --outfile=app/dist/index.js --define:process.env.NODE_ENV=\\\"production\\\"",
     "dev-watch-build": "npm run build -- --watch --define:process.env.NODE_ENV=\\\"development\\\"",
     "serve": "http-server app/dist -c-1",
     "watch": "concurrently \"npm run serve\" \"npm run dev-watch-build\""
