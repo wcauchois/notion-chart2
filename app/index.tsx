@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import { createRoot } from "react-dom/client"
 import * as qs from "query-string"
 import { useDebounce } from "use-debounce"
@@ -9,7 +9,10 @@ import { SnackBarProvider } from "./components/SnackBarProvider"
 const env: string = process.env.NODE_ENV!
 const siteRoot =
   env === "production" ? "" : "https://lovely-biscotti-ad161b.netlify.app"
-const renderEndpoint = siteRoot + "/.netlify/functions/render"
+
+class Endpoints {
+  static readonly render = siteRoot + "/.netlify/functions/render"
+}
 
 function useLocalStorage(
   key: string,
@@ -51,12 +54,14 @@ function RefreshButton({ onClick }: { onClick: () => void }) {
   )
 }
 
+// https://github.com/vega/editor/blob/dfa71a1e2242e5ff279549dc96900b585717245d/src/components/header/share-modal/renderer.tsx#L63
+
 function App() {
   const [databaseId, setDatabaseId] = useLocalStorage("database_id", "")
   const [spec, setSpec] = useLocalStorage("spec", "")
   const [ts, setTs] = useState<number | undefined>(undefined)
 
-  const renderUrl = `${renderEndpoint}?${qs.stringify({
+  const renderUrl = `${Endpoints.render}?${qs.stringify({
     database_id: databaseId,
     spec,
     ts,

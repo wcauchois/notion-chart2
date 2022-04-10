@@ -1,32 +1,14 @@
 import { Handler } from "@netlify/functions"
-import { z } from "zod"
-import { getDatabaseRows } from "./utils"
+import { hydrateSpecFromQueryParams, paramsSchema } from "./utils"
 import * as vega from "vega"
 import * as vegaLite from "vega-lite"
 
-const paramSchema = z.object({
-  database_id: z.string(),
-  spec: z.string(),
-})
-
 const handlerInner: Handler = async (event, context) => {
-  const params = paramSchema.parse(event.queryStringParameters ?? {})
-  const rows = await getDatabaseRows(params.database_id)
-  const transformedRows = rows.map((row) => Object.fromEntries(row.properties))
-  const parsedSpec = JSON.parse(params.spec)
-  const spec = {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    data: {
-      values: transformedRows,
-    },
-    ...parsedSpec,
-  }
-
-  const vegaSpec = vegaLite.compile(spec as any).spec
+  const params = paramsSchema.parse(event.queryStringParameters ?? {})
+  const hydratedSpec = await hydrateSpecFromQueryParams(params)
+  const vegaSpec = vegaLite.compile(hydratedSpec).spec
   const view = new vega.View(vega.parse(vegaSpec), { renderer: "none" })
-
   const svg = await view.toSVG()
-
   return {
     statusCode: 200,
     body: svg,

@@ -1,5 +1,6 @@
 import { Client } from "@notionhq/client"
 import { QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints"
+import { z } from "zod"
 
 export type ValueType = string | number | null
 
@@ -7,6 +8,13 @@ export interface DatabaseRow {
   id: string
   properties: Array<[string, ValueType]>
 }
+
+export const paramsSchema = z.object({
+  database_id: z.string(),
+  spec: z.string(),
+})
+
+type ParamsType = z.infer<typeof paramsSchema>
 
 const NotMapped = Symbol("NotMapped")
 
@@ -55,4 +63,20 @@ export async function getDatabaseRows(databaseId: string) {
   } while (nextCursor)
 
   return rows
+}
+
+export async function hydrateSpecFromQueryParams(
+  params: ParamsType
+): Promise<any> {
+  const rows = await getDatabaseRows(params.database_id)
+  const transformedRows = rows.map((row) => Object.fromEntries(row.properties))
+  const parsedSpec = JSON.parse(params.spec)
+  const spec = {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    data: {
+      values: transformedRows,
+    },
+    ...parsedSpec,
+  }
+  return spec
 }
