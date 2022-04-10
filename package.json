@@ -6,8 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo HELLO FROM BUILD CMD",
-    "build2": "mkdir -p app/dist && cp app/index.html app/dist/index.html && esbuild app/index.tsx --bundle --outfile=app/dist/index.js",
+    "build": "mkdir -p app/dist && cp app/index.html app/dist/index.html && esbuild app/index.tsx --bundle --outfile=app/dist/index.js",
     "serve": "http-server app/dist -c-1",
     "watch": "concurrently \"npm run serve\" \"npm run build -- --watch\""
   },
