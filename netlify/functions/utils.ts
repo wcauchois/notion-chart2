@@ -39,6 +39,9 @@ function resultToRow(result: QueryDatabaseResponse["results"][0]): DatabaseRow {
                 value.multi_select.length > 0
                   ? value.multi_select[0].name
                   : null
+            } else if (value.type === "date") {
+              // Might want to use end and time_zone fields as well?
+              mappedValue = value.date?.start ?? null
             }
             return mappedValue !== NotMapped ? [[key, mappedValue]] : []
           })
