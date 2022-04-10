@@ -1,10 +1,22 @@
-import React, { useCallback, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { createRoot } from "react-dom/client"
 import * as qs from "query-string"
-import { useDebounce } from "use-debounce"
 import classNames from "classnames"
 import copy from "copy-to-clipboard"
 import { SnackBarProvider } from "./components/SnackBarProvider"
+
+function useDebounce<T>(value: T, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+  return debouncedValue
+}
 
 const env: string = process.env.NODE_ENV!
 const siteRoot =
@@ -57,16 +69,37 @@ function RefreshButton({ onClick }: { onClick: () => void }) {
 // https://github.com/vega/editor/blob/dfa71a1e2242e5ff279549dc96900b585717245d/src/components/header/share-modal/renderer.tsx#L63
 
 function App() {
-  const [databaseId, setDatabaseId] = useLocalStorage("database_id", "")
-  const [spec, setSpec] = useLocalStorage("spec", "")
   const [ts, setTs] = useState<number | undefined>(undefined)
 
-  const renderUrl = `${Endpoints.render}?${qs.stringify({
-    database_id: databaseId,
-    spec,
-    ts,
-  })}`
-  const [debouncedRenderUrl] = useDebounce(renderUrl, 500)
+  const [renderUrl, setRenderUrl] = useLocalStorage(
+    "render_url",
+    Endpoints.render + "?"
+  )
+
+  const renderUrlParams = qs.parse(renderUrl.split("?")[1] ?? "") as Record<
+    string,
+    string
+  >
+  const databaseId = renderUrlParams["database_id"] ?? ""
+  const spec = renderUrlParams["spec"] ?? ""
+
+  const renderUrlParamSetter = (name: string) => (value: string) => {
+    setRenderUrl(
+      Endpoints.render +
+        "?" +
+        qs.stringify({
+          ...renderUrlParams,
+          [name]: value,
+        })
+    )
+  }
+  const setDatabaseId = renderUrlParamSetter("database_id")
+  const setSpec = renderUrlParamSetter("spec")
+
+  const renderUrlToShow = useDebounce(
+    renderUrl + (ts ? `&ts=${encodeURIComponent(ts)}` : ""),
+    300
+  )
 
   return (
     <div className="container">
@@ -81,6 +114,12 @@ function App() {
           value={spec}
           onChange={(e) => setSpec(e.currentTarget.value)}
         />
+        <input
+          type="text"
+          value={renderUrl}
+          onChange={(e) => setRenderUrl(e.currentTarget.value)}
+          onFocus={(e) => e.target.select()}
+        />
       </div>
       <div className="chart-container">
         <RefreshButton
@@ -92,7 +131,7 @@ function App() {
           <SnackBarProvider>
             {({ snackBarFromClick }) => (
               <img
-                src={debouncedRenderUrl}
+                src={renderUrlToShow}
                 style={{ cursor: "pointer" }}
                 onClick={(event) => {
                   snackBarFromClick(event, "Copied to clipboard!")
