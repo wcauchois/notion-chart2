@@ -12,11 +12,13 @@ const paramSchema = z.object({
 const handlerInner: Handler = async (event, context) => {
   const params = paramSchema.parse(event.queryStringParameters ?? {})
   const rows = await getDatabaseRows(params.database_id)
-  const data = rows.map((row) => Object.fromEntries(row.properties))
+  const transformedRows = rows.map((row) => Object.fromEntries(row.properties))
   const parsedSpec = JSON.parse(params.spec)
   const spec = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
-    data,
+    data: {
+      values: transformedRows,
+    },
     ...parsedSpec,
   }
 

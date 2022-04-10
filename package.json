@@ -6,9 +6,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "mkdir -p app/dist && cp app/index.html app/dist/index.html && esbuild app/index.tsx --bundle --outfile=app/dist/index.js",
+    "build": "mkdir -p app/dist && cp app/index.html app/dist/index.html && esbuild app/index.tsx --bundle --outfile=app/dist/index.js --define:process.env.NODE_ENV=\\\"production\\\"",
+    "dev-watch-build": "npm run build -- --watch --define:process.env.NODE_ENV=\\\"development\\\"",
     "serve": "http-server app/dist -c-1",
-    "watch": "concurrently \"npm run serve\" \"npm run build -- --watch\""
+    "watch": "concurrently \"npm run serve\" \"npm run dev-watch-build\""
   },
   "keywords": [],
   "author": "",
@@ -25,9 +26,12 @@
   "dependencies": {
     "@netlify/functions": "^1.0.0",
     "@notionhq/client": "^1.0.4",
+    "@types/lodash": "^4.14.181",
     "lodash": "^4.17.21",
+    "query-string": "^7.1.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "use-debounce": "^7.0.1",
     "vega": "^5.22.1",
     "vega-lite": "^5.2.0",
     "zod": "^3.14.4"
