@@ -5,12 +5,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "mkdir -p dist && cp app/index.html app/dist/index.html && esbuild app/index.tsx --bundle --outfile=app/dist/index.js",
+    "serve": "http-server app/dist -c-1",
+    "watch": "concurrently \"npm run serve\" \"npm run build -- --watch\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/react": "^18.0.1",
+    "@types/react-dom": "^18.0.0",
+    "concurrently": "^7.1.0",
+    "esbuild": "^0.14.34",
+    "http-server": "^14.1.0",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
   },
@@ -18,6 +26,8 @@
     "@netlify/functions": "^1.0.0",
     "@notionhq/client": "^1.0.4",
     "lodash": "^4.17.21",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "vega": "^5.22.1",
     "vega-lite": "^5.2.0",
     "zod": "^3.14.4"
