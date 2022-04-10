@@ -24,6 +24,7 @@ const siteRoot =
 
 class Endpoints {
   static readonly render = siteRoot + "/.netlify/functions/render"
+  static readonly hydrateSpec = siteRoot + "/.netlify/functions/hydrate-spec"
 }
 
 function useLocalStorage(
@@ -66,6 +67,8 @@ function RefreshButton({ onClick }: { onClick: () => void }) {
   )
 }
 
+async function hydrateSpec(spec: string) {}
+
 // https://github.com/vega/editor/blob/dfa71a1e2242e5ff279549dc96900b585717245d/src/components/header/share-modal/renderer.tsx#L63
 
 function App() {
@@ -96,10 +99,8 @@ function App() {
   const setDatabaseId = renderUrlParamSetter("database_id")
   const setSpec = renderUrlParamSetter("spec")
 
-  const renderUrlToShow = useDebounce(
-    renderUrl + (ts ? `&ts=${encodeURIComponent(ts)}` : ""),
-    300
-  )
+  const renderUrlToShow =
+    useDebounce(renderUrl, 300) + (ts ? `&ts=${encodeURIComponent(ts)}` : "")
 
   return (
     <div className="container">
