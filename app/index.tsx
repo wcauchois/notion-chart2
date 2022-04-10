@@ -4,6 +4,7 @@ import * as qs from "query-string"
 import classNames from "classnames"
 import copy from "copy-to-clipboard"
 import { SnackBarProvider } from "./components/SnackBarProvider"
+import LZString from "lz-string"
 
 function useDebounce<T>(value: T, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value)
@@ -69,9 +70,20 @@ function RefreshButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-async function hydrateSpec(spec: string) {}
+async function hydrateSpec(databaseId: string, spec: string) {
+  const url = `${Endpoints.hydrateSpec}?${qs.stringify({
+    database_id: databaseId,
+    spec,
+  })}`
+  const response = await fetch(url)
+  return await response.json()
+}
 
-// https://github.com/vega/editor/blob/dfa71a1e2242e5ff279549dc96900b585717245d/src/components/header/share-modal/renderer.tsx#L63
+function makeVegaEditorUrl(specString: string) {
+  // https://github.com/vega/editor/blob/dfa71a1e2242e5ff279549dc96900b585717245d/src/components/header/share-modal/renderer.tsx#L63
+  const serializedSpec = LZString.compressToEncodedURIComponent(specString)
+  return `https://vega.github.io/editor/#/url/vega-lite/${serializedSpec}`
+}
 
 function App() {
   const [ts, setTs] = useState<number | undefined>(undefined)
@@ -123,6 +135,19 @@ function App() {
           onChange={(e) => setRenderUrl(e.currentTarget.value)}
           onFocus={(e) => e.target.select()}
         />
+        <a
+          href="#"
+          onClick={async (e) => {
+            e.preventDefault()
+            const { data, ...other } = await hydrateSpec(databaseId, spec)
+            // Move data to the end of the JSON object, makes it easier to edit.
+            other["data"] = data
+            const url = makeVegaEditorUrl(JSON.stringify(other))
+            window.open(url)
+          }}
+        >
+          Open in Vega Editor &rarr;
+        </a>
       </div>
       <div className="chart-container">
         <RefreshButton
