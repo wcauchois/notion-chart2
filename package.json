@@ -16,8 +16,11 @@
   },
   "dependencies": {
     "@netlify/functions": "^1.0.0",
+    "@notionhq/client": "^1.0.4",
+    "lodash": "^4.17.21",
     "vega": "^5.22.1",
-    "vega-lite": "^5.2.0"
+    "vega-lite": "^5.2.0",
+    "zod": "^3.14.4"
   },
   "prettier": {
     "semi": false
