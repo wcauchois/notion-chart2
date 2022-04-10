@@ -8,6 +8,11 @@ const handler: Handler = async (event, context) => {
     statusCode: 200,
     headers: {
       "Content-Type": "application/json",
+      ...(event.headers.origin === "https://localhost:8080"
+        ? {
+            "Access-Control-Allow-Origin": event.headers.origin,
+          }
+        : {}),
     },
     body: JSON.stringify(hydratedSpec),
   }
