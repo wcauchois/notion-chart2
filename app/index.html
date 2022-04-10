@@ -2,6 +2,71 @@
 <html>
   <head>
     <title>Notion Chart</title>
+    <style type="text/css">
+      .container {
+        display: flex;
+      }
+
+      .container > * {
+        flex-grow: 1;
+      }
+
+      .form-container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-container textarea {
+        min-height: 500px;
+      }
+
+      .chart-container {
+        min-width: 50vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 5px;
+        height: 30px;
+        width: 30px;
+        background-color: rgba(1, 1, 1, 0.1);
+        user-select: none;
+        transition: background-color 0.2s;
+      }
+
+      .rotate-anim {
+        animation-name: rotate;
+        animation-duration: 0.2s;
+        animation-timing-function: linear;
+      }
+
+      .button:hover {
+        background-color: rgba(1, 1, 1, 0.2);
+      }
+
+      .refresh-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0);
+        }
+
+        to {
+          transform: rotate(180deg);
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>

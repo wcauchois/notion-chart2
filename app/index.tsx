@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { createRoot } from "react-dom/client"
 import * as qs from "query-string"
 import { useDebounce } from "use-debounce"
+import classNames from "classnames"
+import copy from "copy-to-clipboard"
 
 const env: string = process.env.NODE_ENV!
 const siteRoot =
@@ -25,21 +27,47 @@ function useLocalStorage(
   ]
 }
 
+function RefreshButton({ onClick }: { onClick: () => void }) {
+  const [animating, setAnimating] = useState(false)
+
+  const className = classNames("button refresh-button", {
+    "rotate-anim": animating,
+  })
+
+  return (
+    <div
+      className={className}
+      onClick={() => {
+        onClick()
+        setAnimating(true)
+      }}
+      onAnimationEnd={() => {
+        setAnimating(false)
+      }}
+    >
+      🔄
+    </div>
+  )
+}
+
 function App() {
   const [databaseId, setDatabaseId] = useLocalStorage("database_id", "")
   const [spec, setSpec] = useLocalStorage("spec", "")
+  const [ts, setTs] = useState<number | undefined>(undefined)
 
   const renderUrl = `${renderEndpoint}?${qs.stringify({
     database_id: databaseId,
     spec,
+    ts,
   })}`
   const [debouncedRenderUrl] = useDebounce(renderUrl, 500)
 
   return (
-    <div>
-      <div>
+    <div className="container">
+      <div className="form-container">
         <input
           type="text"
+          placeholder="Database ID"
           value={databaseId}
           onChange={(e) => setDatabaseId(e.currentTarget.value)}
         />
@@ -48,8 +76,15 @@ function App() {
           onChange={(e) => setSpec(e.currentTarget.value)}
         />
       </div>
-      <div>
-        <img src={debouncedRenderUrl} />
+      <div className="chart-container">
+        <RefreshButton
+          onClick={() => {
+            setTs(new Date().getTime()) // Cache-bust
+          }}
+        />
+        <div>
+          <img src={debouncedRenderUrl} />
+        </div>
       </div>
     </div>
   )
