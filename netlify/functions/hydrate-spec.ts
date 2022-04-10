@@ -9,7 +9,7 @@ const handler: Handler = async (event, context) => {
     headers: {
       "Content-Type": "application/json",
     },
-    hydratedSpec,
+    body: JSON.stringify(hydratedSpec),
   }
 }
 
