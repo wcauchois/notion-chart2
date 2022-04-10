@@ -4,6 +4,7 @@ import * as qs from "query-string"
 import { useDebounce } from "use-debounce"
 import classNames from "classnames"
 import copy from "copy-to-clipboard"
+import { SnackBarProvider } from "./components/SnackBarProvider"
 
 const env: string = process.env.NODE_ENV!
 const siteRoot =
@@ -83,7 +84,18 @@ function App() {
           }}
         />
         <div>
-          <img src={debouncedRenderUrl} />
+          <SnackBarProvider>
+            {({ snackBarFromClick }) => (
+              <img
+                src={debouncedRenderUrl}
+                style={{ cursor: "pointer" }}
+                onClick={(event) => {
+                  snackBarFromClick(event, "Copied to clipboard!")
+                  copy(renderUrl)
+                }}
+              />
+            )}
+          </SnackBarProvider>
         </div>
       </div>
     </div>
