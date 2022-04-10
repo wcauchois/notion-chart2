@@ -19,8 +19,7 @@ function useDebounce<T>(value: T, delay: number) {
 }
 
 const env: string = process.env.NODE_ENV!
-const siteRoot =
-  env === "production" ? "" : "https://lovely-biscotti-ad161b.netlify.app"
+const siteRoot = env === "production" ? "" : "https://notion-chart.netlify.app"
 
 class Endpoints {
   static readonly render = siteRoot + "/.netlify/functions/render"
